@@ -1,5 +1,5 @@
 module Lua
-  class TableReader
+  module TableReader
     VERSION = "0.0.1"
   end
 end
