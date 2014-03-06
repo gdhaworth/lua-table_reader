@@ -1,7 +1,8 @@
 require "lua/table_reader/version"
 
+
 module Lua
-  module TableReader
-    # Your code goes here...
+  class TableReader
+    # TODO
   end
 end

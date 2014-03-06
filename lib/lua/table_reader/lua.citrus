@@ -1,0 +1,6 @@
+grammar Lua
+  rule document
+    # TODO
+  end
+  # TODO
+end

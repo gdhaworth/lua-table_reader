@@ -1,0 +1,4 @@
+SampleLuaTable = {
+	["foo"] = "bar",
+	-- TODO
+}
