@@ -15,14 +15,14 @@ module Lua
           (
             escape_sequence |
             (str('\\') | str(quote)).absent? >> any
-          ).repeat.as(:string_content) >>
+          ).repeat.as(:content) >>
           str(quote)
         end.reduce {|union, atom| union | atom }
       end
       
       rule :multiline_string do
         str('[') >> str('=').repeat.capture(:multiline_equal_padding) >> str('[') >>
-        (multiline_string_end_delimeter.absent? >> any).repeat.as(:string_content) >>
+        (multiline_string_end_delimeter.absent? >> any).repeat.as(:content) >>
         multiline_string_end_delimeter
       end
       

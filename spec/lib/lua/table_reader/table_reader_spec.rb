@@ -8,6 +8,8 @@ describe Lua::TableReader do
     let!(:result) { subject.read_file(SAMPLE_TABLE_PATH) }
     
   	it 'should have the right values' do
+      pending
+      
       result.should respond_to(:SampleLuaTable)
       # result.SampleLuaTable.should_not be_nil
       # TODO
