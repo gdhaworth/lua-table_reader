@@ -12,7 +12,8 @@ module Lua
       rule(str_key: simple(:key), value: subtree(:value)) { TableEntry.new(key.to_s, value) }
       
       rule(table: subtree(:table)) do
-        (table.is_a?(Array) ? table : [ table ]).compact.inject({}) do |hash, entry|
+        entries = table.is_a?(Array) ? table : [ table ].compact
+        entries.reduce({}) do |hash, entry|
           hash[entry.key] = entry.value
           hash
         end

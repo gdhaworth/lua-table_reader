@@ -7,10 +7,12 @@ describe Lua::TableReader::LuaParser do
   context 'when parsing tables' do
     let(:rule) { parser.table }
     
-    it 'consumes empty tables'
+    it 'consumes empty tables' do
+      rule.parse('{ }')
+    end
     
     context 'with only key-value pairs' do
-      it 'consumes simple samples' do
+      it 'consumes simple tables' do
         sample = <<-EOS
           {
             ["foo"] = "bar baz",
@@ -34,6 +36,10 @@ describe Lua::TableReader::LuaParser do
             },
           }
         EOS
+        rule.parse(sample.strip)
+      end
+      it 'consumes a mix of key and value definitions' do
+        sample = File.read(File.join(File.dirname(__FILE__), 'key-value_table.lua'))
         rule.parse(sample.strip)
       end
     end

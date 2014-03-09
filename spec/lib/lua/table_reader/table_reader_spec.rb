@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 
-SAMPLE_TABLE_PATH = File.join(File.dirname(__FILE__), 'table.lua')
+# SAMPLE_TABLE_PATH = File.join(File.dirname(__FILE__), 'table.lua')
 
 describe Lua::TableReader do
   context 'when reading the sample table' do
-    let!(:result) { subject.read_file(SAMPLE_TABLE_PATH) }
+    # let!(:result) { subject.read_file(SAMPLE_TABLE_PATH) }
     
   	it 'should have the right values' do
       pending
