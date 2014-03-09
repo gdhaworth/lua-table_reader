@@ -1,5 +1,6 @@
 require "lua/table_reader/version"
 require "lua/table_reader/lua_parser"
+require "lua/table_reader/lua_transformer"
 
 
 module Lua
