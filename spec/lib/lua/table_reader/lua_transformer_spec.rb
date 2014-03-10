@@ -8,23 +8,27 @@ describe Lua::TableReader::LuaTransformer do
   context 'when applied to parsed tables' do
     let(:parser_rule) { parser.table }
     
+    def expect_parsed_transformed(str)
+      parsed = parser_rule.parse(str.strip)
+      expect(transformer.apply(parsed))
+    end
+    
     it 'transforms empty tables' do
-      parsed = parser_rule.parse('{ }')
-      expect(transformer.apply(parsed)).to eq({})
+      expect_parsed_transformed('{ }').to eq({})
     end
     
     context 'with only key-value pairs' do
       it 'transforms a simple table' do
-        parsed = parser_rule.parse((<<-EOS).strip)
+        sample = <<-EOS
           {
             ["foo"] = "bar",
             ["a"] = "b",
           }
         EOS
-        expect(transformer.apply(parsed)).to eq({ 'foo' => 'bar', 'a' => 'b' })
+        expect_parsed_transformed(sample).to eq({ 'foo' => 'bar', 'a' => 'b' })
       end
       it 'transforms a table with nested tables' do
-        parsed = parser_rule.parse((<<-EOS).strip)
+        sample = <<-EOS
           {
             ["foo"] = "bar",
             ["a"] = {
@@ -33,7 +37,7 @@ describe Lua::TableReader::LuaTransformer do
             },
           }
         EOS
-        expect(transformer.apply(parsed)).to eq({
+        expect_parsed_transformed(sample).to eq({
           'foo' => 'bar',
           'a' => {
             '1' => 'one',
@@ -41,7 +45,6 @@ describe Lua::TableReader::LuaTransformer do
           }
         })
       end
-      # TODO
     end
     
     # TODO other types
