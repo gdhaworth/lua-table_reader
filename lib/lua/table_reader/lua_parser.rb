@@ -14,8 +14,8 @@ module Lua
       end
       
       rule :expression do
-        string | table | number
-        # TODO 'nil' | 'false' | 'true' | number | '...' | functiondef | prefixexp | exp binop exp | unop exp
+        string | table | number | value_keyword
+        # TODO '...' | functiondef | prefixexp | exp binop exp | unop exp
       end
       
       
@@ -97,6 +97,10 @@ module Lua
       
       
       # Misc
+      
+      rule(:value_keyword) do
+        [ :true, :false, :nil ].map {|sym| str(sym.to_s).as(sym) }.reduce {|union, atom| union | atom }
+      end
       
       rule(:name) { match['a-zA-Z_'] >> match['a-zA-Z0-9_'].repeat }
       

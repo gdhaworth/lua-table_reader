@@ -39,6 +39,20 @@ describe Lua::TableReader::LuaTransformer do
     end
   end
   
+  context 'when applied to keyword values' do
+    let(:parser_rule) { parser.expression }
+    
+    it 'transforms "true"' do
+      expect_parsed_transformed('true').to eq(true)
+    end
+    it 'transforms "false"' do
+      expect_parsed_transformed('false').to eq(false)
+    end
+    it 'transforms "nil"' do
+      expect_parsed_transformed('nil').to be_nil
+    end
+  end
+  
   context 'when applied to parsed tables' do
     let(:parser_rule) { parser.table }
     

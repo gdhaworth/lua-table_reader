@@ -23,6 +23,14 @@ module Lua
       rule(float: simple(:float)) { float.to_f }
       rule(hex: simple(:hex)) { hex.to_s.hex }
       
+      {
+        :true => true,
+        :false => false,
+        :nil => nil
+      }.each do |keyword, value|
+        rule(keyword => simple(:x)) {|y| value }
+      end
+      
       
       TableHashEntry = Struct.new(:key, :value)
       
