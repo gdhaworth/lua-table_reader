@@ -7,8 +7,8 @@ module Lua
       def self.build_escape_replacements
         escape_letters = %w{ a b f n r t v ' " }
         replacements = escape_letters.map {|letter| [ ('\\' + letter), eval("\"\\#{letter}\"") ].freeze }
-        replacements << [ "\\\n", "\n" ]  # intentional, per Lua spec
-        replacements << [ '\\\\', '\\' ]  # needs to go last
+        replacements << [ "\\\n", "\n" ].freeze  # intentional, per Lua spec
+        replacements << [ '\\\\', '\\' ].freeze  # needs to go last
         replacements.freeze
       end
       
