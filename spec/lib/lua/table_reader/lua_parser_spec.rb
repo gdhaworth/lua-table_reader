@@ -53,44 +53,44 @@ describe Lua::TableReader::LuaParser do
     
     context 'with double-quotes' do
       it 'consumes simple samples' do
-        expect(rule.parse('"foo bar"')).to include(string: "foo bar")
-        expect(rule.parse('"foo \'bar\' baz"')).to include(string: "foo 'bar' baz")
+        expect(rule.parse('"foo bar"')).to include(quoted_string: "foo bar")
+        expect(rule.parse('"foo \'bar\' baz"')).to include(quoted_string: "foo 'bar' baz")
       end
       it 'consumes samples with escape sequences' do
-        expect(rule.parse('"The cow says \\"Moo\\""')).to include(string: 'The cow says \\"Moo\\"')
+        expect(rule.parse('"The cow says \\"Moo\\""')).to include(quoted_string: 'The cow says \\"Moo\\"')
       end
     end
     
     context 'with single-quotes' do
       it 'consumes simple samples' do
-        expect(rule.parse("'Hello world!'")).to include(string: "Hello world!")
+        expect(rule.parse("'Hello world!'")).to include(quoted_string: "Hello world!")
       end
       it 'consumes samples with escape sequences' do
-        expect(rule.parse("'I\\\'ve got an escape sequence!'")).to include(string: "I\\\'ve got an escape sequence!")
-        expect(rule.parse("'foo bar \\\'asdf\\\' baz?'")).to include(string: "foo bar \\\'asdf\\\' baz?")
+        expect(rule.parse("'I\\\'ve got an escape sequence!'")).to include(quoted_string: "I\\\'ve got an escape sequence!")
+        expect(rule.parse("'foo bar \\\'asdf\\\' baz?'")).to include(quoted_string: "foo bar \\\'asdf\\\' baz?")
       end
     end
     
     context 'with multi-line delimeters' do
       it 'consumes simple samples' do
-        expect(rule.parse('[[A single-line multi-line!]]')).to include(string: 'A single-line multi-line!')
+        expect(rule.parse('[[A single-line multi-line!]]')).to include(multiline_string: 'A single-line multi-line!')
         sample = <<-EOS
 [[This is a multi-line string that
 actually takes up multiple lines!]]
 EOS
         expect(rule.parse(sample.strip)).to include(
-          string: "This is a multi-line string that\nactually takes up multiple lines!")
+          multiline_string: "This is a multi-line string that\nactually takes up multiple lines!")
       end
       it 'consumes samples with padded \'=\'' do
-        expect(rule.parse('[=[The cake is a lie.]=]')).to include(string: 'The cake is a lie.')
-        expect(rule.parse('[===[sample text]===]')).to include(string: 'sample text')
-        expect(rule.parse('[==[ a ]=] b ]==]')).to include(string: ' a ]=] b ')
+        expect(rule.parse('[=[The cake is a lie.]=]')).to include(multiline_string: 'The cake is a lie.')
+        expect(rule.parse('[===[sample text]===]')).to include(multiline_string: 'sample text')
+        expect(rule.parse('[==[ a ]=] b ]==]')).to include(multiline_string: ' a ]=] b ')
         sample = <<-EOS
 [=[Line 1
 [[Line 2]]
 Line 3]=]
 EOS
-        expect(rule.parse(sample.strip)).to include(string: "Line 1\n[[Line 2]]\nLine 3")
+        expect(rule.parse(sample.strip)).to include(multiline_string: "Line 1\n[[Line 2]]\nLine 3")
       end
     end
   end

@@ -8,13 +8,7 @@ module Lua
     
     def self.read_file(path)
       contents = File.read(path)
-      # TODO
-    end
-    
-    class Document
-      def initialize(parse_matches)
-        # TODO
-      end
+      LuaTransformer.new.apply(LuaParser.new.parse(contents))
     end
     
   end

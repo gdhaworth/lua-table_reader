@@ -10,6 +10,35 @@ describe Lua::TableReader::LuaTransformer do
     expect(transformer.apply(parsed))
   end
   
+  context 'when applied to parsed strings' do
+    let(:parser_rule) { parser.string }
+    
+    context 'with escape sequences' do
+      it 'transforms single-quotes' do
+        expect_parsed_transformed("'foo \\'bar\\''").to eq("foo 'bar'")
+      end
+      it 'transforms double-quotes' do
+        expect_parsed_transformed('"foo \"bar\""').to eq('foo "bar"')
+      end
+      it 'transforms newlines in quoted strings' do
+        expect_parsed_transformed('"foo\nbar"').to eq("foo\nbar")
+      end
+      it 'transforms tabs' do
+        expect_parsed_transformed('"foo\tbar"').to eq("foo\tbar")
+      end
+      it 'transforms escaped newline characters in quoted strings' do
+        expect_parsed_transformed("'foo\\\nbar'").to eq("foo\nbar")
+      end
+      it 'does not transform escape sequences in multiline strings' do
+        expect_parsed_transformed('[[foo \"bar\\\' baz]]').to eq('foo \"bar\\\' baz')
+        expect_parsed_transformed('[[foo\n\tbar]]').to eq('foo\n\tbar')
+      end
+      it 'removes the optional leading newline in multiline strings' do
+        expect_parsed_transformed("[[\nfoo\nbar]]").to eq("foo\nbar")
+      end
+    end
+  end
+  
   context 'when applied to parsed tables' do
     let(:parser_rule) { parser.table }
     

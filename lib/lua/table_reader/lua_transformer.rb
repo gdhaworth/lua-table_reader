@@ -4,7 +4,21 @@ module Lua
   module TableReader
     class LuaTransformer < Parslet::Transform
       
-      rule(string: simple(:str)) { str.to_s }
+      def self.build_escape_replacements
+        escape_letters = %w{ a b f n r t v ' " }
+        replacements = escape_letters.map {|letter| [ ('\\' + letter), eval("\"\\#{letter}\"") ].freeze }
+        replacements << [ "\\\n", "\n" ]  # intentional, per Lua spec
+        replacements << [ '\\\\', '\\' ]  # needs to go last
+        replacements.freeze
+      end
+      
+      ESCAPE_REPLACEMENTS = build_escape_replacements.freeze
+      
+      rule(quoted_string: simple(:str)) do
+        ESCAPE_REPLACEMENTS.inject(str.to_s) {|result, replacement| result.gsub(*replacement) }
+      end
+      rule(multiline_string: simple(:str)) { str.to_s }
+      
       rule(int: simple(:int)) { int.to_i }
       rule(float: simple(:float)) { float.to_f }
       rule(hex: simple(:hex)) { hex.to_s.hex }

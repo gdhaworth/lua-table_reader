@@ -52,14 +52,14 @@ module Lua
           (
             escape_sequence |
             (str('\\') | str(quote)).absent? >> any
-          ).repeat.as(:string) >>
+          ).repeat.as(:quoted_string) >>
           str(quote)
         end.reduce {|union, atom| union | atom }
       end
       
       rule :multiline_string do
-        str('[') >> str('=').repeat.capture(:multiline_equal_padding) >> str('[') >>
-        (multiline_string_end_delimeter.absent? >> any).repeat.as(:string) >>
+        str('[') >> str('=').repeat.capture(:multiline_equal_padding) >> str('[') >> str("\n").maybe >>
+        (multiline_string_end_delimeter.absent? >> any).repeat.as(:multiline_string) >>
         multiline_string_end_delimeter
       end
       
@@ -70,7 +70,7 @@ module Lua
       
       # TODO add transformation for escape sequences
       rule(:escape_sequence) { char_escape | decimal_escape | hex_escape }
-      rule(:char_escape) { str('\\') >> (match['abfnrtvz"\'\\\\'] | str('\r').maybe >> str('\n')) }
+      rule(:char_escape) { str('\\') >> (match['abfnrtv"\'\\\\'] | str("\n") | str('\r').maybe >> str('\n')) }
       rule(:decimal_escape) { str('\\') >> match['0-2'].maybe >> match('\d').repeat(1,2) }
       rule(:hex_escape) { str('\\x') >> hex_digit.repeat(2,2) }
       
