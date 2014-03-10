@@ -115,16 +115,18 @@ describe Lua::TableReader::LuaTransformer do
     it 'transforms negative floats' do
       expect_parsed_transformed('-2.71828').to eq(-2.71828)
     end
-    it 'transforms floats with an exponent'
-    it 'transforms floats with an exponent and no decimal'
+    it 'transforms floats with an exponent' do
+      expect_parsed_transformed('6.0221413e23').to eq(6.0221413e+23)
+    end
+    it 'transforms floats with an exponent and no decimal' do
+      expect_parsed_transformed('.5446170e-3').to eq(5.446170e-4)
+    end
     it 'transforms hex integers' do
       expect_parsed_transformed('0x2a').to eq(42)
     end
     it 'transforms negative hex integers' do
       expect_parsed_transformed('-0xdeadbeef').to eq(-3735928559)
     end
-    it 'transforms hex floats'
-    it 'transforms negative hex floats'
   end
   
   # TODO

@@ -14,7 +14,7 @@ module Lua
       end
       
       rule :expression do
-        string | table
+        string | table | number
         # TODO 'nil' | 'false' | 'true' | number | '...' | functiondef | prefixexp | exp binop exp | unop exp
       end
       
@@ -77,10 +77,10 @@ module Lua
       
       # Numbers
       
-      rule(:number) { float | int | hex }
+      rule(:number) { float | hex | int }
       
       rule(:int) { (str('-').maybe >> digits).as(:int) }
-      
+      rule(:hex) { (str('-').maybe >> hex_prefix >> hex_digits).as(:hex) }
       rule(:float) do
         ( str('-').maybe >> (
           digits >> str('.') >> digits.maybe >> float_exponent.maybe |
@@ -90,13 +90,10 @@ module Lua
       end
       rule(:float_exponent) { match['eE'] >> match['+-'].maybe >> digits }
       
-      rule(:hex) do
-        ( str('-').maybe >> str('0') >> match['xX'] >> hex_digit.repeat(1)
-        ).as(:hex)
-      end
-      
       rule(:digits) { match['0-9'].repeat(1) }
       rule(:hex_digit) { match['0-9a-fA-F'] }
+      rule(:hex_digits) { hex_digit.repeat(1) }
+      rule(:hex_prefix) { str('0') >> match['xX'] }
       
       
       # Misc
