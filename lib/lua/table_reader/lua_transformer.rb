@@ -30,7 +30,7 @@ module Lua
           
           result = {}
           unless @array_entries.empty?
-            # TODO
+            @array_entries.each_with_index {|entry, index| result[index + 1] = entry }
           end
           @hash_entries.each do |table_hash_entry|
             # TODO handle overlapping array indices and hash keys
@@ -46,11 +46,6 @@ module Lua
         builder = TableBuilder.new
         entries.each(&builder.method(:add))
         builder.build
-        
-        # entries.reduce({}) do |hash, entry|
-        #   hash[entry.key] = entry.value
-        #   hash
-        # end
       end
       
       # TODO
