@@ -18,11 +18,11 @@ module Lua
       
       
       rule :table do
-        str('{') >> space? >> field_list.maybe.as(:table) >> str('}') >> space?
+        str('{') >> space? >> field_list.maybe.as(:table) >> space? >> str('}')
       end
       
       rule :field_list do
-        field >> (field_separator >> field).repeat >> field_separator.maybe
+        field >> space? >> (field_separator >> space? >> field >> space?).repeat >> field_separator.maybe
       end
       
       rule :field do
@@ -32,12 +32,12 @@ module Lua
       end
       
       rule :field_separator do
-        match[',;'] >> space?
+        match[',;']
       end
       
       
       rule :string do
-        (quoted_string | multiline_string) >> space?
+        quoted_string | multiline_string
       end
       
       rule :quoted_string do
@@ -62,6 +62,7 @@ module Lua
       end
         
       
+      # TODO add transformation for escape sequences
       rule(:escape_sequence) { char_escape | decimal_escape | hex_escape }
       rule(:char_escape) { str('\\') >> (match['abfnrtvz"\'\\\\'] | str('\r').maybe >> str('\n')) }
       rule(:decimal_escape) { str('\\') >> match['0-2'].maybe >> match('\d').repeat(1,2) }
@@ -69,6 +70,20 @@ module Lua
       
       
       rule(:name) { match['a-zA-Z_'] >> match['a-zA-Z0-9_'].repeat }
+      
+      rule(:number) { float | int } #| hex | hex_float }
+      rule(:int) { (str('-').maybe >> digits).as(:int) }
+      rule(:digits) { match['0-9'].repeat(1) }
+      
+      rule(:float) do
+        (
+          str('-').maybe >> (
+            digits >> str('.') >> digits.maybe >> float_exponent.maybe |
+            str('.') >> digits >> float_exponent.maybe |
+            digits >> float_exponent
+        )).as(:float)
+      end
+      rule(:float_exponent) { match['eE'] >> match['+-'].maybe >> digits }
       
       rule(:space) { match('\s').repeat(1) }
       rule(:space?) { space.maybe }

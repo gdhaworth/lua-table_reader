@@ -5,13 +5,13 @@ describe Lua::TableReader::LuaTransformer do
   let(:parser) { Lua::TableReader::LuaParser.new }
   subject(:transformer) { Lua::TableReader::LuaTransformer.new }
   
+  def expect_parsed_transformed(str)
+    parsed = parser_rule.parse(str.strip)
+    expect(transformer.apply(parsed))
+  end
+  
   context 'when applied to parsed tables' do
     let(:parser_rule) { parser.table }
-    
-    def expect_parsed_transformed(str)
-      parsed = parser_rule.parse(str.strip)
-      expect(transformer.apply(parsed))
-    end
     
     it 'transforms empty tables' do
       expect_parsed_transformed('{ }').to eq({})
@@ -98,6 +98,27 @@ describe Lua::TableReader::LuaTransformer do
         })
       end
     end
+  end
+  
+  context 'when applied to parsed numbers' do
+    let(:parser_rule) { parser.number }
+    
+    it 'transforms integers' do
+      expect_parsed_transformed('42').to eq(42)
+    end
+    it 'transforms negative integers' do
+      expect_parsed_transformed('-15').to eq(-15)
+    end
+    it 'transforms simple floats' do
+      expect_parsed_transformed('3.14159').to eq(3.14159)
+    end
+    it 'transforms negative floats' do
+      expect_parsed_transformed('-2.71828').to eq(-2.71828)
+    end
+    it 'transforms floats with an exponent'
+    it 'transforms floats with an exponent and no decimal'
+    it 'transforms hex integers'
+    it 'transforms hex floats'
   end
   
   # TODO
