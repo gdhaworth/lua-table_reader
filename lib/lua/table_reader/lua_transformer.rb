@@ -7,6 +7,7 @@ module Lua
       rule(string: simple(:str)) { str.to_s }
       rule(int: simple(:int)) { int.to_i }
       rule(float: simple(:float)) { float.to_f }
+      rule(hex: simple(:hex)) { hex.to_s.hex }
       
       
       TableHashEntry = Struct.new(:key, :value)

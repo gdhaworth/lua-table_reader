@@ -7,6 +7,8 @@ module Lua
   module TableReader
     class LuaParser < Parslet::Parser
       
+      # Abstractions
+      
       rule :document do
         space? >> expression >> space?
       end
@@ -16,6 +18,8 @@ module Lua
         # TODO 'nil' | 'false' | 'true' | number | '...' | functiondef | prefixexp | exp binop exp | unop exp
       end
       
+      
+      # Tables
       
       rule :table do
         str('{') >> space? >> field_list.maybe.as(:table) >> space? >> str('}')
@@ -35,6 +39,8 @@ module Lua
         match[',;']
       end
       
+      
+      # Strings
       
       rule :string do
         quoted_string | multiline_string
@@ -66,24 +72,36 @@ module Lua
       rule(:escape_sequence) { char_escape | decimal_escape | hex_escape }
       rule(:char_escape) { str('\\') >> (match['abfnrtvz"\'\\\\'] | str('\r').maybe >> str('\n')) }
       rule(:decimal_escape) { str('\\') >> match['0-2'].maybe >> match('\d').repeat(1,2) }
-      rule(:hex_escape) { str('\\x') >> match['0-9a-fA-F'].repeat(2,2) }
+      rule(:hex_escape) { str('\\x') >> hex_digit.repeat(2,2) }
       
       
-      rule(:name) { match['a-zA-Z_'] >> match['a-zA-Z0-9_'].repeat }
+      # Numbers
       
-      rule(:number) { float | int } #| hex | hex_float }
+      rule(:number) { float | int | hex }
+      
       rule(:int) { (str('-').maybe >> digits).as(:int) }
-      rule(:digits) { match['0-9'].repeat(1) }
       
       rule(:float) do
-        (
-          str('-').maybe >> (
-            digits >> str('.') >> digits.maybe >> float_exponent.maybe |
-            str('.') >> digits >> float_exponent.maybe |
-            digits >> float_exponent
+        ( str('-').maybe >> (
+          digits >> str('.') >> digits.maybe >> float_exponent.maybe |
+          str('.') >> digits >> float_exponent.maybe |
+          digits >> float_exponent
         )).as(:float)
       end
       rule(:float_exponent) { match['eE'] >> match['+-'].maybe >> digits }
+      
+      rule(:hex) do
+        ( str('-').maybe >> str('0') >> match['xX'] >> hex_digit.repeat(1)
+        ).as(:hex)
+      end
+      
+      rule(:digits) { match['0-9'].repeat(1) }
+      rule(:hex_digit) { match['0-9a-fA-F'] }
+      
+      
+      # Misc
+      
+      rule(:name) { match['a-zA-Z_'] >> match['a-zA-Z0-9_'].repeat }
       
       rule(:space) { match('\s').repeat(1) }
       rule(:space?) { space.maybe }
