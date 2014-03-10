@@ -18,25 +18,17 @@ module Lua
       
       
       rule :table do
-        # '{' fieldlist? '}'
         str('{') >> space? >> field_list.maybe.as(:table) >> str('}') >> space?
       end
       
       rule :field_list do
-        # field (fieldsep field)* fieldsep?
         field >> (field_separator >> field).repeat >> field_separator.maybe
       end
       
       rule :field do
         str('[') >> space? >> expression.as(:key) >> str(']') >> space? >> str('=') >> space? >> expression.as(:value) |
-        name.as(:str_key) >> space? >> str('=') >> space? >> expression.as(:value)
-        
-        # TODO all parts
-        # '[' exp ']' '=' exp | NAME '=' exp | exp
-        # str('[') >> space? >> expression.as(:table_key) >> str(']') >> space? >>
-        #   str('=') >> space? >> expression.as(:table_value) |
-        # name.as(:key) >> str('=') >> space? >> expression.as(:value) |
-        # expression
+        name.as(:str_key) >> space? >> str('=') >> space? >> expression.as(:value) |
+        expression.as(:value)
       end
       
       rule :field_separator do

@@ -47,7 +47,30 @@ describe Lua::TableReader::LuaTransformer do
       end
     end
     
-    # TODO other types
+    context 'with only array values' do
+      it 'transforms a simple table into an array' do
+        sample = <<-EOS
+          {
+            "foo", "bar", "baz"
+          }
+        EOS
+        expect_parsed_transformed(sample).to eq(%w{ foo bar baz })
+      end
+      it 'transforms a table with a nested key-value table' do
+        sample = <<-EOS
+          {
+            { foo = "bar" },
+            "baz"
+          }
+        EOS
+        expect_parsed_transformed(sample).to eq([ { 'foo' => 'bar' }, 'baz' ])
+      end
+    end
+    
+    context 'with both key-value pairs and array values' do
+      it 'transforms a simple table into a hash'
+      it 'transforms a table with nested tables'
+    end
   end
   
   # TODO
