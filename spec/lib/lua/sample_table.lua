@@ -1,4 +1,4 @@
-{
+sample_table_a = {
 	["foo"] = "simple string", --[==[long comment 1]==]
 	["bar"] = "string with an \"escape\"",
 	-- short comment 1
@@ -13,3 +13,5 @@
 		-- [4] = "four",
 	},
 }
+
+sample_table_b = { a = 'b' }

@@ -1,5 +1,6 @@
 require 'parslet'
 
+
 module Lua
   module TableReader
     class LuaTransformer < Parslet::Transform
@@ -66,14 +67,22 @@ module Lua
       end
       
       rule(table: subtree(:table)) do
-        entries = table.is_a?(Array) ? table : [ table ].compact
+        entries = LuaTransformer.safe_to_a(table)
         
         builder = TableBuilder.new
         entries.each(&builder.method(:add))
         builder.build
       end
       
-      # TODO
+      
+      rule(table_name: simple(:name), table_definition: subtree(:data)) { [name.to_sym, data] }
+      rule(tables: subtree(:tables)) { Hash[LuaTransformer.safe_to_a(tables)] }
+      
+      
+      def self.safe_to_a(obj)
+        obj.is_a?(Array) ? obj : [ obj ].compact
+      end
+      
     end
   end
 end

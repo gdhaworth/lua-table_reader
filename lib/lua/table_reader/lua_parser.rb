@@ -10,7 +10,12 @@ module Lua
       # Abstractions
       
       rule :document do
-        space? >> expression >> space?
+        (space? >> top_level_table).repeat.as(:tables) >> space?
+      end
+      
+      rule :top_level_table do
+        # This is not a real Lua concept, its merely to facilitate the design to only read tables
+        name.as(:table_name) >> space? >> str('=') >> space? >> table.as(:table_definition)
       end
       
       rule :expression do
