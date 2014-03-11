@@ -56,17 +56,23 @@ module Lua
           str(quote)
         end.reduce {|union, atom| union | atom }
       end
+      rule(:multiline_string) { multiline_string_rule(:multiline_string) }
       
-      rule :multiline_string do
-        str('[') >> str('=').repeat.capture(:multiline_equal_padding) >> str('[') >> str("\n").maybe >>
-        (multiline_string_end_delimeter.absent? >> any).repeat.as(:multiline_string) >>
-        multiline_string_end_delimeter
+      def multiline_string_rule(capture_name=nil)
+        scope do
+          content = (multiline_string_end_delimeter.absent? >> any).repeat
+          content = content.as(capture_name) if capture_name
+          
+          str('[') >> str('=').repeat.capture(:multiline_equal_padding) >> str('[') >> str("\n").maybe >>
+          content >>
+          multiline_string_end_delimeter
+        end
       end
       
       rule :multiline_string_end_delimeter do
         str(']') >> dynamic {|s, context| str(context.captures[:multiline_equal_padding]) } >> str(']')
       end
-        
+      
       
       # TODO add transformation for escape sequences
       rule(:escape_sequence) { char_escape | decimal_escape | hex_escape }
@@ -104,9 +110,15 @@ module Lua
       
       rule(:name) { match['a-zA-Z_'] >> match['a-zA-Z0-9_'].repeat }
       
-      rule(:space) { match('\s').repeat(1) }
+      rule(:space) { (comment | match('\s')).repeat(1) }
       rule(:space?) { space.maybe }
+      rule(:line_ending) { str("\r\n") | match["\r\n"] | any.absent? }
       
+      rule(:comment) { long_comment | short_comment }
+      rule(:long_comment) { str('--') >> multiline_string_rule }
+      rule(:short_comment) do
+        str('--') >> (line_ending.absent? >> any).repeat >> line_ending
+      end
       
       root :document
       

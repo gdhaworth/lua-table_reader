@@ -44,8 +44,7 @@ describe Lua::TableReader::LuaParser do
       end
     end
     
-    # TODO list-style and mixed
-    # TODO other types of keys
+    # Other types of table data is handled in lua_transformer_spec.rb
   end
   
   context 'when parsing strings' do
@@ -93,9 +92,5 @@ EOS
         expect(rule.parse(sample.strip)).to include(multiline_string: "Line 1\n[[Line 2]]\nLine 3")
       end
     end
-  end
-  
-  context 'when parsing tables' do
-    # TODO
   end
 end

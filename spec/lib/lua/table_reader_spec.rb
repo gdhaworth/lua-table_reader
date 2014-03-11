@@ -13,7 +13,7 @@ describe Lua::TableReader do
         'empty' => false,
         'to_english' => {
           1 => 'one',
-          2 => 'two'
+          2 => 'two',
         }
       })
     end
